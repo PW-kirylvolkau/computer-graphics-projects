@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ComputerGraphics.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="ComputerGraphics.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="ComputerGraphics">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <TabControl>
+        <TabItem Header="Project One" VerticalContentAlignment="Center">
+            <Grid Background="White" 
+                  ShowGridLines="True" 
+                  ColumnDefinitions="*,*,*">
+                <StackPanel>
+                    <Border 
+                        CornerRadius="30" 
+                        BorderThickness="4" 
+                        BorderBrush="black"
+                        Width="256"
+                        Height="256"
+                    >
+                        <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
+                            <Image Source="{Binding OriginalImage}"></Image>
+                        </ScrollViewer>
+                    </Border>
+                    <Button Name="SelectImageButton" Command="{Binding SelectImage}">Open</Button>
+                    <TextBlock Text="{Binding Path}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
+                        <Image Source="{Binding ActiveImage}"></Image>
+                    </ScrollViewer>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Button Command="{Binding InvertImage}">Invert</Button>
+                    <Button>Click me</Button>
+                    <Button>Click me</Button>
+                    <Button>Click me</Button>
+                </StackPanel>
+            </Grid>
+        </TabItem>
+        <TabItem Header="About" VerticalContentAlignment="Center">
+            <TextBox>Some data.</TextBox>
+        </TabItem>
+        <TabItem Header="Experiments" VerticalContentAlignment="Center">
+            <TextBox>Some data.</TextBox>
+        </TabItem>
+    </TabControl>
+
+</Window>
