@@ -16,19 +16,11 @@
         <TabItem Header="Project One" VerticalContentAlignment="Center">
             <Grid Background="White" 
                   ShowGridLines="True" 
-                  ColumnDefinitions="*,*,*">
+                  ColumnDefinitions="2*,2*,*">
                 <StackPanel>
-                    <Border 
-                        CornerRadius="30" 
-                        BorderThickness="4" 
-                        BorderBrush="black"
-                        Width="256"
-                        Height="256"
-                    >
-                        <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
-                            <Image Source="{Binding OriginalImage}"></Image>
-                        </ScrollViewer>
-                    </Border>
+                    <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
+                        <Image Source="{Binding OriginalImage}"></Image>
+                    </ScrollViewer>
                     <Button Name="SelectImageButton" Command="{Binding SelectImage}">Open</Button>
                     <TextBlock Text="{Binding Path}" />
                 </StackPanel>
@@ -36,20 +28,48 @@
                     <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
                         <Image Source="{Binding ActiveImage}"></Image>
                     </ScrollViewer>
+                    <Button 
+                        Name="RestoreImageButton" 
+                        Command="{Binding RestoreImage}"
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Restore image
+                    </Button>
+                    <Button 
+                        Name="SaveImageButton" 
+                        Command="{Binding SaveImage}"
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Save image
+                    </Button>
                 </StackPanel>
                 <StackPanel Grid.Column="2">
-                    <Button Command="{Binding InvertImage}">Invert</Button>
-                    <Button>Click me</Button>
-                    <Button>Click me</Button>
-                    <Button>Click me</Button>
+                    <Button 
+                        Command="{Binding InvertImage}" 
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Invert
+                    </Button>
+                    <Button 
+                        Command="{Binding BrightenImage}"
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Brighten
+                    </Button>
+                    <Button 
+                        Command="{Binding ContrastImage}"
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Contrast
+                    </Button>
+                    <Button 
+                         Command="{Binding GammaImage}"
+                         IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        Gamma
+                    </Button>
                 </StackPanel>
             </Grid>
         </TabItem>
         <TabItem Header="About" VerticalContentAlignment="Center">
-            <TextBox>Some data.</TextBox>
+            <TextBox>Here will be data about this repository/project.</TextBox>
         </TabItem>
         <TabItem Header="Experiments" VerticalContentAlignment="Center">
-            <TextBox>Some data.</TextBox>
+            <TextBox>Here will be chaos.</TextBox>
         </TabItem>
     </TabControl>
 
