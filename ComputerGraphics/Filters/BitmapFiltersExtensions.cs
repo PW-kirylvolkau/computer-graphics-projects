@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
@@ -8,8 +7,6 @@ namespace ComputerGraphics.Filters
 {
     public static class BitmapFiltersExtensions
     {
-        public const int KERNEL_SIZE = 3;
-        
         public static Bitmap ApplyConvolutionalFilter<T>(this Bitmap original)
             where T : ConvolutionalFilter, new()
         {
@@ -19,7 +16,7 @@ namespace ComputerGraphics.Filters
             // Source: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.bitmap.lockbits?view=net-5.0
             var applianceRectangle = new Rectangle(0, 0, original.Width, original.Height);
             var lockMode = ImageLockMode.ReadOnly;
-            var pixelFormat = PixelFormat.Canonical; // 32-bit per pixel (rgb - 24-bit, alpha - 8-bit).
+            var pixelFormat = PixelFormat.Format32bppArgb; // 32-bit per pixel (rgb - 24-bit, alpha - 8-bit).
             var originalData = original.LockBits(applianceRectangle, lockMode, pixelFormat);
             
             // Stride: https://docs.microsoft.com/pl-pl/dotnet/api/system.drawing.imaging.bitmapdata.stride?view=net-5.0

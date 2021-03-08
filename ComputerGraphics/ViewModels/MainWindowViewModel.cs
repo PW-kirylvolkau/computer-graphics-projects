@@ -24,8 +24,7 @@ namespace ComputerGraphics.ViewModels
         private const int BRIGHTNESS_COEFF = 10;
         private const int CONTRAST_COEFF = 10;
         private const double GAMMA_COEFF = 0.5;
-        private const int KERNEL_SIZE = 9;
-        
+
         private string? _path;
         private SystemBitmap? _originalImage;
         private SystemBitmap? _activeImage;
