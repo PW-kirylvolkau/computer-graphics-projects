@@ -4,9 +4,23 @@
         <TargetFramework>net5.0</TargetFramework>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Title>Compute Graphics Project</Title>
+        <Authors>Kiryl Volkau</Authors>
+        <Description>Projects for Computer Graphics class at MiNI, WUT.</Description>
+        <PackageLicenseUrl>https://github.com/kirylvolkau/computer-graphics-projects/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/kirylvolkau/computer-graphics-projects/blob/main/LICENSE</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <PackageTags>AvaloniaUI, C#, .NET5</PackageTags>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+      <DocumentationFile>bin\Release\ComputerGraphics.xml</DocumentationFile>
     </PropertyGroup>
     <ItemGroup>
-        <Folder Include="Converters" />
+        <Folder Include="Filters\Functional" />
         <Folder Include="Models" />
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
@@ -16,5 +30,6 @@
         <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
+        <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="5.8.64" />
     </ItemGroup>
 </Project>
