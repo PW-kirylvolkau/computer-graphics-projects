@@ -13,6 +13,7 @@ using ComputerGraphics.Extensions;
 using ReactiveUI;
 using SystemBitmap = System.Drawing.Bitmap;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
+using SystemImage = System.Drawing.Image;
 
 namespace ComputerGraphics.ViewModels
 {
@@ -21,6 +22,7 @@ namespace ComputerGraphics.ViewModels
         private const int BRIGHTNESS_COEFF = 10;
         private const int CONTRAST_COEFF = 10;
         private const double GAMMA_COEFF = 0.5;
+        private const int KERNEL_SIZE = 9;
         
         private string? _path;
         private SystemBitmap? _originalImage;
@@ -77,7 +79,8 @@ namespace ComputerGraphics.ViewModels
         {
             var filter = new FileDialogFilter() { Name = "Images", Extensions = {"svg", "jpg", "jpeg", "png"} };
             var dialog = new OpenFileDialog() { AllowMultiple = false, Filters = new List<FileDialogFilter>() {filter}};
-
+            
+            //TODO: change to normal check
             var desktop = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             var window = desktop!.MainWindow;
 
@@ -119,6 +122,14 @@ namespace ComputerGraphics.ViewModels
         public void RestoreImage()
         {
             _activeImage = _originalImage;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+
+        public async void BlurrImage()
+        {
+            var pic = await Task.Run(() =>
+                Blur(_activeImage!, new Rectangle(50, 50, _activeImage!.Width-50, _activeImage!.Height-50), KERNEL_SIZE));
+            _activeImage = pic;
             this.RaisePropertyChanged(nameof(ActiveImage));
         }
 
@@ -174,5 +185,78 @@ namespace ComputerGraphics.ViewModels
 
         #endregion
         
+        private unsafe SystemBitmap Blur(SystemBitmap image, Rectangle rectangle, Int32 blurSize)
+        {
+            var blurred = new SystemBitmap(image.Width, image.Height);
+
+            // make an exact copy of the bitmap provided
+            using (Graphics graphics = Graphics.FromImage(blurred))
+            {
+                var destRec = new Rectangle(0, 0, image.Width, image.Height);
+                var srcRec = new Rectangle(0, 0, image.Width, image.Height);
+                graphics.DrawImage(image, destRec,srcRec, GraphicsUnit.Pixel);
+            }
+            
+            var rect = new Rectangle(0, 0, image.Width, image.Height);
+            BitmapData blurredData = blurred.LockBits(rect, ImageLockMode.ReadWrite, blurred.PixelFormat);
+
+            // Get bits per pixel for current PixelFormat
+            var bitsPerPixel = SystemImage.GetPixelFormatSize(blurred.PixelFormat);
+
+            // Get pointer to first line
+            // docs: https://docs.microsoft.com/en-us/dotnet/api/system.drawing.imaging.bitmapdata.scan0?view=net-5.0
+            var scan0 = (byte*) blurredData.Scan0;
+
+            // look at every pixel in the blur rectangle
+            for (int xx = rectangle.X; xx < rectangle.X + rectangle.Width; xx++)
+            {
+                for (int yy = rectangle.Y; yy < rectangle.Y + rectangle.Height; yy++)
+                {
+                    int avgR = 0, avgG = 0, avgB = 0;
+                    int blurPixelCount = 0;
+
+                    // average the color of the red, green and blue for each pixel in the
+                    // blur size while making sure you don't go outside the image bounds
+                    for (int x = xx; (x < xx + blurSize && x < image.Width); x++)
+                    {
+                        for (int y = yy; (y < yy + blurSize && y < image.Height); y++)
+                        {
+                            // Get pointer to RGB
+                            byte* data = scan0 + y * blurredData.Stride + x * bitsPerPixel / 8;
+
+                            avgB += data[0]; // Blue
+                            avgG += data[1]; // Green
+                            avgR += data[2]; // Red
+
+                            blurPixelCount++;
+                        }
+                    }
+
+                    avgR = avgR / blurPixelCount;
+                    avgG = avgG / blurPixelCount;
+                    avgB = avgB / blurPixelCount;
+
+                    // now that we know the average for the blur size, set each pixel to that color
+                    for (int x = xx; x < xx + blurSize && x < image.Width && x < rectangle.Width; x++)
+                    {
+                        for (int y = yy; y < yy + blurSize && y < image.Height && y < rectangle.Height; y++)
+                        {
+                            // Get pointer to RGB
+                            byte* data = scan0 + y * blurredData.Stride + x * bitsPerPixel / 8;
+
+                            // Change values
+                            data[0] = (byte)avgB;
+                            data[1] = (byte)avgG;
+                            data[2] = (byte)avgR;
+                        }
+                    }
+                }
+            }
+
+            // Unlock the bits
+            blurred.UnlockBits(blurredData);
+
+            return blurred;
+        }
     }
 }
