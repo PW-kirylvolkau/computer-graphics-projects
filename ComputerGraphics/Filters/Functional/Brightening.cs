@@ -11,6 +11,7 @@ namespace ComputerGraphics.Filters.Functional
             result = result < 0 ? 0 : result;
             return result;
         };
+        
         protected override FunctionalFilterDelegate GetFilter()
         {
             return _brightenFilter;

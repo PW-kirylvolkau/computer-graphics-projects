@@ -1,5 +1,8 @@
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using ComputerGraphics.Filters.Extensions;
+using ComputerGraphics.Models;
 using SystemBitmap = System.Drawing.Bitmap;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
 

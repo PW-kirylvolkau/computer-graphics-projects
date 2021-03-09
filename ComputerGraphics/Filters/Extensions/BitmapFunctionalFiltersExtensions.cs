@@ -1,5 +1,6 @@
 using System.Drawing;
 using ComputerGraphics.Filters.Functional;
+using ComputerGraphics.Models;
 
 namespace ComputerGraphics.Filters.Extensions
 {
@@ -18,6 +19,28 @@ namespace ComputerGraphics.Filters.Extensions
                 {
                     var pixel = pic.GetPixel(x, y);
                     ApplyFunctionalFilterToPixel(ref pixel, filter.Filter);
+                    pic.SetPixel(x, y, pixel);
+                }
+            }
+
+            return pic;
+        }
+
+        public static Bitmap ApplyCustomFunctionalFilter(
+            this Bitmap original,
+            CustomFilter customFilter)
+        {
+            var pic = new Bitmap(original);
+            
+            for (var y = 0; y <= pic.Height - 1; y++)
+            {
+                for (var x = 0; x <= pic.Width - 1; x++)
+                {
+                    var pixel = pic.GetPixel(x, y);
+                    foreach (var filter in customFilter.FunctionalFilters)
+                    {
+                        ApplyFunctionalFilterToPixel(ref pixel, filter);
+                    }
                     pic.SetPixel(x, y, pixel);
                 }
             }

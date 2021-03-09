@@ -35,7 +35,7 @@ namespace ComputerGraphics.Filters.Extensions
             var kernel = filter.Kernel;
             var kernelSize = filter.KernelSize;
             var offset = (kernelSize-1) / 2;
-
+            
             // rowIndex - row index of pixel.
             // columnIndex - column index of pixel.
             // offset - skipped pixels.

@@ -14,6 +14,7 @@ namespace ComputerGraphics.Filters.Functional
             result = result > 255 ? 255 : result;
             return (int) result;
         };
+        
         protected override FunctionalFilterDelegate GetFilter()
         {
             return _gammaFilter;
