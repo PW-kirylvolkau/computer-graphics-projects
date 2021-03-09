@@ -7,6 +7,24 @@
         x:Class="ComputerGraphics.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="ComputerGraphics">
+    
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Width" Value="150"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5 5"/>
+        </Style>
+        <Style Selector="Label">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+    </Window.Styles>
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
@@ -15,16 +33,17 @@
     <TabControl>
         <TabItem Header="Project One" VerticalContentAlignment="Center">
             <Grid Background="White"
+                  ColumnDefinitions="2*,2*,*"
                   ShowGridLines="True"
-                  ColumnDefinitions="2*,2*,*">
-                <StackPanel>
+            >
+                <StackPanel MinWidth="256">
                     <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
                         <Image Source="{Binding OriginalImage}" />
                     </ScrollViewer>
                     <Button Name="SelectImageButton" Command="{Binding SelectImage}">Open</Button>
                     <TextBlock Text="{Binding Path}" />
                 </StackPanel>
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" MinWidth="256">
                     <WrapPanel>
                         <StackPanel>
                             <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
@@ -51,45 +70,36 @@
                     </WrapPanel>
                     
                 </StackPanel>
-                <StackPanel Grid.Column="2">
+                <StackPanel Grid.Column="2" MinWidth="200">
                     <Label Target="FunctionaFiltersPanel">Functional filters</Label>
-                    <StackPanel Name="FunctionaFiltersPanel">
-                        <Button
-                            Command="{Binding InvertImage}"
-                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            Invert
-                        </Button>
-                        <Button
-                            Command="{Binding BrightenImage}"
-                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            Brighten
-                        </Button>
-                        <Button
-                            Command="{Binding ContrastImage}"
-                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            Contrast
-                        </Button>
-                        <Button
-                            Command="{Binding GammaImage}"
-                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            Gamma
-                        </Button>
+                    <StackPanel 
+                        Name="FunctionaFiltersPanel"
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Button Command="{Binding InvertImage}">Invert</Button>
+                        <Button Command="{Binding BrightenImage}">Brighten</Button>
+                        <Button Command="{Binding ContrastImage}">Contrast</Button>
+                        <Button Command="{Binding GammaImage}">Gamma</Button>
                     </StackPanel>
                     <Label Target="ConvolutionalFiltersPanel">Convolutional filters</Label>
-                    <StackPanel Name="ConvolutionalFiltersPanel">
-                        <Button
-                            Command="{Binding BlurrImage}"
-                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            Blur
-                        </Button>
+                    <StackPanel 
+                        Name="ConvolutionalFiltersPanel" 
+                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Button Command="{Binding IdentityImage}">Identity</Button>
+                        <Button Command="{Binding BlurImage}">Blur</Button>
+                        <Button Command="{Binding EdgeDetection}">Edge Detection</Button>
+                        <Button Command="{Binding Emboss}">Emboss</Button>
+                        <Button Command="{Binding GaussianBlur}">Gaussian Blur</Button>
+                        <Button Command="{Binding SharpenImage}">Sharpen</Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>
         </TabItem>
-        <TabItem Header="About" VerticalContentAlignment="Center">
-        </TabItem>
-        <TabItem Header="Experiments" VerticalContentAlignment="Center">
-        </TabItem>
+        <!-- <TabItem Header="About" VerticalContentAlignment="Center"> -->
+        <!--     <TextBox>Here will be data about this repository/project.</TextBox> -->
+        <!-- </TabItem> -->
+        <!-- <TabItem Header="Experiments" VerticalContentAlignment="Center"> -->
+        <!--     -->
+        <!-- </TabItem> -->
     </TabControl>
 
 </Window>

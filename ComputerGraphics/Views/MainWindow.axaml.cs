@@ -19,10 +19,11 @@ namespace ComputerGraphics.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
 #if DEBUG
             this.AttachDevTools();
 #endif
+            MinWidth = 256 + 256 + 200 + 30;
+            MinHeight = 256 + 256 + 200;
         }
 
         private void InitializeComponent()

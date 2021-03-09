@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
@@ -12,6 +13,7 @@ using Avalonia.Media.Imaging;
 using ComputerGraphics.Extensions;
 using ComputerGraphics.Filters.Extensions;
 using ComputerGraphics.Filters.Convolutional;
+using ComputerGraphics.Filters.Functional;
 using ReactiveUI;
 using SystemBitmap = System.Drawing.Bitmap;
 using AvaloniaBitmap = Avalonia.Media.Imaging.Bitmap;
@@ -21,42 +23,9 @@ namespace ComputerGraphics.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private const int BRIGHTNESS_COEFF = 10;
-        private const int CONTRAST_COEFF = 10;
-        private const double GAMMA_COEFF = 0.5;
-
         private string? _path;
         private SystemBitmap? _originalImage;
         private SystemBitmap? _activeImage;
-
-        #region functional filters
-        
-        private delegate int FunctionalFilter(int channel);
-        private readonly FunctionalFilter _invertFilter = (channel) => 255 - channel;
-        private readonly FunctionalFilter _brightenFilter = (channel) => 
-        {
-            var result = channel + BRIGHTNESS_COEFF;
-            result = result > 255 ? 255 : result;
-            result = result < 0 ? 0 : result;
-            return result;
-        };
-        private readonly FunctionalFilter _contrastFilter = (channel) =>
-        {
-            var result = channel > 127 ? channel + CONTRAST_COEFF : channel - CONTRAST_COEFF;
-            result = result > 255 ? 255 : result;
-            result = result < 0 ? 0 : result;
-            return result;
-        };
-        private readonly FunctionalFilter _gammaFilter = (channel) =>
-        {
-            var gammaCorrection = 1 / GAMMA_COEFF;
-            var tmp = (double) channel / 255;
-            var result = 255 * Math.Pow(tmp, gammaCorrection);
-            result = result > 255 ? 255 : result;
-            return (int) result;
-        };
-
-        #endregion
 
         public string? Path
         {
@@ -74,7 +43,7 @@ namespace ComputerGraphics.ViewModels
             set => this.RaiseAndSetIfChanged(ref _activeImage, value?.GetSystemBitmap());
         }
 
-        #region button clicks
+        #region image methods
 
         public async void SelectImage()
         {
@@ -85,39 +54,13 @@ namespace ComputerGraphics.ViewModels
             var desktop = Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             var window = desktop!.MainWindow;
 
-            string[] result = await dialog.ShowAsync(window);
-            Path = result?[0];
-
-            OriginalImage = new AvaloniaBitmap(Path ?? string.Empty);
-            ActiveImage = new AvaloniaBitmap(Path ?? string.Empty);
-        }
-        
-        public async void InvertImage()
-        {
-            var pic = await ApplyFunctionalFilter(_activeImage!, _invertFilter);
-            _activeImage = pic;
-            this.RaisePropertyChanged(nameof(ActiveImage));
-        }
-
-        public async void BrightenImage()
-        {
-            var pic = await ApplyFunctionalFilter(_activeImage!, _brightenFilter);
-            _activeImage = pic;
-            this.RaisePropertyChanged(nameof(ActiveImage));
-        }
-
-        public async void ContrastImage()
-        {
-            var pic = await ApplyFunctionalFilter(_activeImage!, _contrastFilter);
-            _activeImage = pic;
-            this.RaisePropertyChanged(nameof(ActiveImage)); 
-        }
-
-        public async void GammaImage()
-        {
-            var pic = await ApplyFunctionalFilter(_activeImage!, _gammaFilter);
-            _activeImage = pic;
-            this.RaisePropertyChanged(nameof(ActiveImage));
+            var result = await dialog.ShowAsync(window);
+            var path = result.FirstOrDefault();
+            if (path is not null)
+            {
+                OriginalImage = new AvaloniaBitmap(path);
+                ActiveImage = new AvaloniaBitmap(path);
+            }
         }
         
         public void RestoreImage()
@@ -125,13 +68,7 @@ namespace ComputerGraphics.ViewModels
             _activeImage = _originalImage;
             this.RaisePropertyChanged(nameof(ActiveImage));
         }
-
-        public void BlurrImage()
-        {
-            _activeImage = _activeImage!.ApplyConvolutionalFilter<Identity>();
-            this.RaisePropertyChanged(nameof(ActiveImage));
-        }
-
+        
         public async void SaveImage()
         {
             var dialog = new SaveFileDialog();
@@ -149,37 +86,83 @@ namespace ComputerGraphics.ViewModels
                 _activeImage?.Save(result);
             }
         }
-        
+
         #endregion
-        
-        #region image modifications
 
-        private async Task<SystemBitmap> ApplyFunctionalFilter(SystemBitmap bitmap, FunctionalFilter filter)
+        #region functional filters
+
+        public async void InvertImage()
         {
-            var pic = new SystemBitmap(bitmap);
-            
-            await Task.Run(() =>
-            {
-                for (var y = 0; y <= pic.Height - 1; y++)
-                {
-                    for (var x = 0; x <= pic.Width - 1; x++)
-                    {
-                        var pixel = pic.GetPixel(x, y);
-                        ApplyFunctionalFilterToPixel(ref pixel, filter);
-                        pic.SetPixel(x, y, pixel);
-                    }
-                }
-            });
-
-            return pic;
+            var pic = await Task.Run(() => _activeImage!.ApplyFunctionalFilter<Inversion>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
         }
 
-        private void ApplyFunctionalFilterToPixel(ref Color color, FunctionalFilter filter)
+        public async void BrightenImage()
         {
-            var red = filter(color.R);
-            var green = filter(color.G);
-            var blue = filter(color.B);
-            color = Color.FromArgb(255, red, green, blue);
+            var pic = await Task.Run(() => _activeImage!.ApplyFunctionalFilter<Brightening>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+
+        public async void ContrastImage()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyFunctionalFilter<Contrast>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage)); 
+        }
+
+        public async void GammaImage()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyFunctionalFilter<Gamma>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        #endregion
+
+        #region convolutional filters
+
+        public async void BlurImage()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<Blur>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        public async void IdentityImage()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<Identity>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        public async void EdgeDetection()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<EdgeDetection>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        public async void Emboss()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<Emboss>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        public async void GaussianBlur()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<GaussianBlur>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+        
+        public async void SharpenImage()
+        {
+            var pic = await Task.Run(() => _activeImage!.ApplyConvolutionalFilter<Sharpen>());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
         }
 
         #endregion
