@@ -11,6 +11,7 @@
         <RepositoryUrl>https://github.com/kirylvolkau/computer-graphics-projects/blob/main/LICENSE</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
         <PackageTags>AvaloniaUI, C#, .NET5</PackageTags>
+        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
       <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -28,6 +29,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
+        <PackageReference Include="Markdown.Avalonia" Version="0.10.1" />
         <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="5.8.64" />
     </ItemGroup>
 </Project>

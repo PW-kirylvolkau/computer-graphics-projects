@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
         x:Class="ComputerGraphics.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="ComputerGraphics">
@@ -23,6 +24,10 @@
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="NumericUpDown">
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Margin" Value="6"></Setter>
         </Style>
     </Window.Styles>
 
@@ -46,11 +51,36 @@
                             <Image Source="{Binding OriginalImage}" />
                         </ScrollViewer>
                     <Button Name="SelectImageButton" Command="{Binding SelectImage}">Open</Button>
-                    <TextBlock Text="{Binding Path}" />
+                    <TextBlock 
+                        HorizontalAlignment = "Center" 
+                        Text="{Binding Path}" />
+                    <StackPanel>
+                        <Border BorderBrush="black" BorderThickness="3" Margin="10" CornerRadius="30 0 30 0">
+                            <Grid ColumnDefinitions="*,*,*"
+                                  RowDefinitions="*,*,*"
+                                  Margin="5">
+                                <NumericUpDown Grid.Column="0" Grid.Row="0" Value="{Binding A1}" />
+                                <NumericUpDown Grid.Column="1" Grid.Row="0" Value="{Binding A2}"/>
+                                <NumericUpDown Grid.Column="2" Grid.Row="0" Value="{Binding A3}"/>
+                                <NumericUpDown Grid.Column="0" Grid.Row="1" Value="{Binding A4}"/>
+                                <NumericUpDown Grid.Column="1" Grid.Row="1" Value="{Binding A5}"/>
+                                <NumericUpDown Grid.Column="2" Grid.Row="1" Value="{Binding A6}"/>
+                                <NumericUpDown Grid.Column="0" Grid.Row="2" Value="{Binding A7}"/>
+                                <NumericUpDown Grid.Column="1" Grid.Row="2" Value="{Binding A8}"/>
+                                <NumericUpDown Grid.Column="2" Grid.Row="2" Value="{Binding A9}"/>
+                            </Grid>
+                        </Border>
+                        <Button 
+                            Command="{Binding ApplyLabFilter}"
+                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}"
+                        >
+                            Apply lab filter
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
                 <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" >
                 <StackPanel MinWidth="300">
-                    <WrapPanel HorizontalAlignment="Center">
+                    <WrapPanel HorizontalAlignment="Center" Margin="0,0,0, 10">
                         <StackPanel Margin="0 0 0 10">
                             <ScrollViewer
                                     Width="256"
@@ -126,9 +156,11 @@
                 </ScrollViewer>
             </Grid>
         </TabItem>
-        <!-- <TabItem Header="About" VerticalContentAlignment="Center"> -->
-        <!--     <TextBox>Here will be data about this repository/project.</TextBox> -->
-        <!-- </TabItem> -->
+        <TabItem Header="About" VerticalContentAlignment="Center">
+            <md:MarkdownScrollViewer Source="avares://ComputerGraphics/Assets/README.md">
+               
+            </md:MarkdownScrollViewer>
+        </TabItem>
         <!-- <TabItem Header="Experiments" VerticalContentAlignment="Center"> -->
         <!--     -->
         <!-- </TabItem> -->

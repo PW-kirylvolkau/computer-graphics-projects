@@ -4,8 +4,9 @@
 
 **/bin/
 **/obj/
+**/.git/
 
 **/*.DS_Store
-**/build
 
 *.user
+*.gitignore

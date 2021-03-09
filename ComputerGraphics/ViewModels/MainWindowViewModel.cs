@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -19,9 +20,11 @@ namespace ComputerGraphics.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         private readonly string _canvasName = "FunctionCanvas";
+
         private delegate void FilterApplied(FunctionalFilter.FunctionalFilterDelegate filterMethod);
+
         private event FilterApplied OnFunctionalFilterApplied;
-        
+
         private string? _path;
         private string _customFilterName = "[No name filter]";
         private SystemBitmap? _originalImage;
@@ -37,29 +40,149 @@ namespace ComputerGraphics.ViewModels
 
         public string? Path
         {
-            get => _path; 
+            get => _path;
             private set => this.RaiseAndSetIfChanged(ref _path, value);
         }
+
         public AvaloniaBitmap? OriginalImage
         {
-            get => _originalImage?.GetAvaloniaBitmap(); 
+            get => _originalImage?.GetAvaloniaBitmap();
             private set => this.RaiseAndSetIfChanged(ref _originalImage, value?.GetSystemBitmap());
         }
+
         public AvaloniaBitmap? ActiveImage
         {
-            get => _activeImage?.GetAvaloniaBitmap(); 
+            get => _activeImage?.GetAvaloniaBitmap();
             set => this.RaiseAndSetIfChanged(ref _activeImage, value?.GetSystemBitmap());
         }
+
         public CustomFilter? CustomFilter
         {
-            get => _customFilter; 
+            get => _customFilter;
             set => this.RaiseAndSetIfChanged(ref _customFilter, value);
         }
+
         public string CustomFilterName
         {
             get => _customFilterName;
             set => this.RaiseAndSetIfChanged(ref _customFilterName, value);
         }
+
+        #region lab_task
+
+        private double _a1;
+
+        public double A1
+        {
+            get => _a1;
+            set => _a1 = this.RaiseAndSetIfChanged(ref _a1, value);
+        }
+
+        private double _a2;
+
+        public double A2
+        {
+            get => _a2;
+            set => _a2 = this.RaiseAndSetIfChanged(ref _a2, value);
+        }
+
+        private double _a3;
+
+        public double A3
+        {
+            get => _a3;
+            set => _a3 = this.RaiseAndSetIfChanged(ref _a3, value);
+        }
+
+        private double _a4;
+
+        public double A4
+        {
+            get => _a4;
+            set => _a4 = this.RaiseAndSetIfChanged(ref _a4, value);
+        }
+
+        private double _a5;
+
+        public double A5
+        {
+            get => _a5;
+            set => _a5 = this.RaiseAndSetIfChanged(ref _a5, value);
+        }
+
+        private double _a6;
+
+        public double A6
+        {
+            get => _a6;
+            set => _a6 = this.RaiseAndSetIfChanged(ref _a6, value);
+        }
+
+        private double _a7;
+
+        public double A7
+        {
+            get => _a7;
+            set => _a7 = this.RaiseAndSetIfChanged(ref _a7, value);
+        }
+
+        private double _a8;
+
+        public double A8
+        {
+            get => _a8;
+            set => _a8 = this.RaiseAndSetIfChanged(ref _a8, value);
+        }
+
+        private double _a9;
+
+        public double A9
+        {
+            get => _a9;
+            set => _a9 = this.RaiseAndSetIfChanged(ref _a9, value);
+        }
+
+        public async void ApplyLabFilter()
+        {
+            var pic = new SystemBitmap(_activeImage);
+            await Task.Run(() =>
+            {
+                for (var i = 0; i < pic.Width; i++)
+                {
+                    for (var j = 0; j < pic.Height; j++)
+                    {
+                        var px = pic.GetPixel(i, j);
+                        var dr = A1 * px.R + A2 * px.G + A3 * px.B;
+                        var dg = A4 * px.R + A5 * px.G + A6 * px.B;
+                        var db = A7 * px.R + A8 * px.G + A9 * px.B;
+                        ClipChannel(ref dr);
+                        ClipChannel(ref dg);
+                        ClipChannel(ref db);
+                        var color = Color.FromArgb(255, (int) dr, (int) dg, (int) db);
+                        pic.SetPixel(i, j, color);
+                    }
+                }
+            });
+
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+
+
+            static void ClipChannel(ref double channel)
+            {
+                if (channel > 255)
+                {
+                    channel = 255;
+                }
+
+                if (channel < 0)
+                {
+                    channel = 0;
+                }
+            }
+        }
+
+        #endregion
 
         #region image file methods
 
@@ -86,7 +209,6 @@ namespace ComputerGraphics.ViewModels
             _activeImage = _originalImage;
             ResetCanvasAndActiveCustomFilter();
             this.RaisePropertyChanged(nameof(ActiveImage));
-           
         }
         
         public async void SaveImage()
@@ -186,9 +308,9 @@ namespace ComputerGraphics.ViewModels
                 }
                 else
                 {
-                   CustomFilter
-                       .FunctionalFilters
-                       .AddRange(buttonFilter.FunctionalFilters);
+                    CustomFilter
+                        .FunctionalFilters
+                        .AddRange(buttonFilter.FunctionalFilters);
                 }
                 VisualizeFilter(CustomFilter);
                 _activeImage = _activeImage!.ApplyCustomFunctionalFilter(CustomFilter);
