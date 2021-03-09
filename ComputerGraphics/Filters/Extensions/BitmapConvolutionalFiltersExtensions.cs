@@ -3,9 +3,9 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using ComputerGraphics.Filters.Convolutional;
 
-namespace ComputerGraphics.Filters
+namespace ComputerGraphics.Filters.Extensions
 {
-    public static class BitmapFiltersExtensions
+    public static class BitmapConvolutionalFiltersExtensions
     {
         public static Bitmap ApplyConvolutionalFilter<T>(this Bitmap original)
             where T : ConvolutionalFilter, new()
@@ -18,9 +18,10 @@ namespace ComputerGraphics.Filters
             var lockMode = ImageLockMode.ReadOnly;
             var pixelFormat = PixelFormat.Format32bppArgb; // 32-bit per pixel (rgb - 24-bit, alpha - 8-bit).
             var originalData = original.LockBits(applianceRectangle, lockMode, pixelFormat);
-            
+
             // Stride: https://docs.microsoft.com/pl-pl/dotnet/api/system.drawing.imaging.bitmapdata.stride?view=net-5.0
-            var bufferLength = originalData.Stride * originalData.Height;
+            var stride = originalData.Stride;
+            var bufferLength = stride * originalData.Height;
             byte[] pixelBuffer = new byte[bufferLength];
             byte[] resultBuffer = new byte[bufferLength];
             
@@ -31,32 +32,40 @@ namespace ComputerGraphics.Filters
             Marshal.Copy(originalData.Scan0, pixelBuffer, 0, bufferLength);
             original.UnlockBits(originalData);
 
+            var kernel = filter.Kernel;
             var kernelSize = filter.KernelSize;
-            var filterOffset = (kernelSize-1) / 2;
+            var offset = (kernelSize-1) / 2;
 
-            for (var offsetY = filterOffset; offsetY < original.Height - filterOffset; offsetY++) 
+            // rowIndex - row index of pixel.
+            // columnIndex - column index of pixel.
+            // offset - skipped pixels.
+            for (var rowIndex = offset; rowIndex < original.Height - offset; rowIndex++) 
             { 
-                for (var offsetX = filterOffset; offsetX < original.Width - filterOffset; offsetX++)
+                for (var columnIndex = offset; columnIndex < original.Width - offset; columnIndex++)
                 {
                     var blue = 0.0;
                     var green = 0.0;
                     var red = 0.0;
 
-                    var byteOffset = offsetY * originalData.Stride + offsetX * 4; 
+                    var pixelIndex = GetPixelIndex(rowIndex, stride, columnIndex);
                     
-                    for (var filterY = -filterOffset; filterY <= filterOffset; filterY++) 
+                    // iterate through neighbour pixels.
+                    // relativeY, relativeX - offsetted position of the neighbour pixel
+                    // with relation to the "main" pixel (available under pixelIndex).
+                    for (var relativeY = -offset; relativeY <= offset; relativeY++) 
                     {
-                        for (var filterX = -filterOffset; filterX <= filterOffset; filterX++) 
+                        for (var relativeX = -offset; relativeX <= offset; relativeX++)
                         {
-                            var calcOffset = byteOffset + filterX * 4 + filterY * originalData.Stride;
+                            var distanceToNeighbour = GetPixelIndex(relativeY, stride, relativeX);
+                            var updPixelIndex = pixelIndex + distanceToNeighbour; // index of pixel to be upd.
 
-                            var yOffset = filterY + filterOffset;
-                            var xOffset = filterX + filterOffset;
-                            var offsetKernel = filter.Kernel[yOffset, xOffset];
+                            var yOffset = relativeY + offset;
+                            var xOffset = relativeX + offset;
+                            var coeff = kernel[yOffset, xOffset];
                             
-                            blue += pixelBuffer[calcOffset] * offsetKernel;
-                            green += pixelBuffer[calcOffset + 1] * offsetKernel;
-                            red += pixelBuffer[calcOffset + 2] * offsetKernel; 
+                            blue += pixelBuffer[updPixelIndex] * coeff;
+                            green += pixelBuffer[updPixelIndex + 1] * coeff;
+                            red += pixelBuffer[updPixelIndex + 2] * coeff; 
                         } 
                     }
                     
@@ -64,12 +73,9 @@ namespace ComputerGraphics.Filters
                     ClipChannelValue(ref green);
                     ClipChannelValue(ref red);
 
-                    resultBuffer[byteOffset] = (byte)blue; 
-                    resultBuffer[byteOffset + 1] = (byte)green; 
-                    resultBuffer[byteOffset + 2] = (byte)red; 
-                    resultBuffer[byteOffset + 3] = 255; 
+                    SetPixelChannels(resultBuffer, pixelIndex, red, green, blue);
                 } 
-            } 
+            }
 
             // Reversing the process, done at the beginning of the method - instead of locking bits so we can
             // copy them more efficiently to buffer array, we lock them so we can write from the buffer array 
@@ -95,6 +101,19 @@ namespace ComputerGraphics.Filters
             {
                 value = 0;
             }
+        }
+
+        private static int GetPixelIndex(int rowIndex, int stride, int columnIndex)
+        {
+            return rowIndex * stride + columnIndex * 4;
+        }
+
+        private static void SetPixelChannels(byte[] buffer, int index, double red, double green, double blue)
+        {
+            buffer[index] = (byte) blue; // blue channel
+            buffer[index + 1] = (byte) green; // green channel
+            buffer[index + 2] = (byte) red; // red channel
+            buffer[index + 3] = 255; // alpha channel
         }
     }
 }

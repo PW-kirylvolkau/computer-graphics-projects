@@ -87,20 +87,8 @@
             </Grid>
         </TabItem>
         <TabItem Header="About" VerticalContentAlignment="Center">
-            <TextBox>Here will be data about this repository/project.</TextBox>
         </TabItem>
         <TabItem Header="Experiments" VerticalContentAlignment="Center">
-            <StackPanel>
-                <TextBox>Here will be chaos.</TextBox>
-                <Canvas Width="256" Height="256" Background="red" Name = "experimanetalcanvas" 
-                        Tapped="Experimanetalcanvas_OnTapped">
-                    
-                </Canvas>
-                <Image Source="{Binding ActiveImage}">
-                    
-                </Image>
-            </StackPanel>
-           
         </TabItem>
     </TabControl>
 

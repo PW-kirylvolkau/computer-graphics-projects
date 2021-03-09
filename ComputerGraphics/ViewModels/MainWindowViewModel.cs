@@ -10,7 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using ComputerGraphics.Extensions;
-using ComputerGraphics.Filters;
+using ComputerGraphics.Filters.Extensions;
 using ComputerGraphics.Filters.Convolutional;
 using ReactiveUI;
 using SystemBitmap = System.Drawing.Bitmap;
@@ -128,7 +128,7 @@ namespace ComputerGraphics.ViewModels
 
         public void BlurrImage()
         {
-            _activeImage = _activeImage!.ApplyConvolutionalFilter<Blur>();
+            _activeImage = _activeImage!.ApplyConvolutionalFilter<Identity>();
             this.RaisePropertyChanged(nameof(ActiveImage));
         }
 

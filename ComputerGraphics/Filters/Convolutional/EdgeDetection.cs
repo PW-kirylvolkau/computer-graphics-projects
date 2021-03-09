@@ -1,16 +1,15 @@
 namespace ComputerGraphics.Filters.Convolutional
 {
-    public class Blur : ConvolutionalFilter
+    public class EdgeDetection : ConvolutionalFilter
     {
         protected override double[,] CalculateKernel()
         {
-            kernel = new double[,]
+            kernel = new double[,] 
             {
-                {0.0, 0.2, 0.0,},
-                {0.2, 0.2, 0.2,},
-                {0.0, 0.2, 0.2,},
+                { -1, -1, -1, }, 
+                { -1,  8, -1, },  
+                { -1, -1, -1, }, 
             };
-
             return kernel;
         }
     }

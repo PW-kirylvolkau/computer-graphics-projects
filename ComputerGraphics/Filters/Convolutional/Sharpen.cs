@@ -1,14 +1,14 @@
 namespace ComputerGraphics.Filters.Convolutional
 {
-    public class Blur : ConvolutionalFilter
+    public class Sharpen : ConvolutionalFilter
     {
         protected override double[,] CalculateKernel()
         {
             kernel = new double[,]
             {
-                {0.0, 0.2, 0.0,},
-                {0.2, 0.2, 0.2,},
-                {0.0, 0.2, 0.2,},
+                {-1, -1, -1,},
+                {-1, 9, -1,},
+                {-1, -1, -1,}
             };
 
             return kernel;
