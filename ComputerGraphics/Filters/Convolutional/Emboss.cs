@@ -4,11 +4,12 @@ namespace ComputerGraphics.Filters.Convolutional
     {
         protected override double[,] CalculateKernel()
         {
+            // South - east emboss.
             kernel = new double[,]
             {
-                {2, 0, 0,},
-                {0, -1, 0,},
-                {0, 0, -1,},
+                {-1, -1, 0,},
+                {-1, 1, 1,},
+                {0, 1, 1,},
             };
 
             return kernel;

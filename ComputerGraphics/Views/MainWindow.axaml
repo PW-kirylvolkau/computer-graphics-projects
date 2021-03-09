@@ -7,22 +7,22 @@
         x:Class="ComputerGraphics.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="ComputerGraphics">
-    
+
     <Window.Styles>
         <Style Selector="Button">
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="Width" Value="150"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="5 5"/>
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="5 5" />
         </Style>
         <Style Selector="Label">
-            <Setter Property="FontSize" Value="20"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
         </Style>
     </Window.Styles>
 
@@ -34,26 +34,28 @@
         <TabItem Header="Project One" VerticalContentAlignment="Center">
             <Grid Background="White"
                   ColumnDefinitions="2*,2*,*"
-                  ShowGridLines="True"
-            >
+                  ShowGridLines="True">
                 <StackPanel MinWidth="256">
-                    <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
+                    <ScrollViewer 
+                        Width="256" 
+                        Height="256" 
+                        HorizontalScrollBarVisibility="Visible"
+                        Margin="10 0 0 10">
                         <Image Source="{Binding OriginalImage}" />
                     </ScrollViewer>
                     <Button Name="SelectImageButton" Command="{Binding SelectImage}">Open</Button>
                     <TextBlock Text="{Binding Path}" />
                 </StackPanel>
-                <StackPanel Grid.Column="1" MinWidth="256">
-                    <WrapPanel>
-                        <StackPanel>
-                            <ScrollViewer Width="256" Height="256" HorizontalScrollBarVisibility="Visible">
+                <StackPanel Grid.Column="1" MinWidth="300">
+                    <WrapPanel HorizontalAlignment="Center">
+                        <StackPanel Margin="0 0 0 10">
+                            <ScrollViewer
+                                Width="256"
+                                Height="256"
+                                HorizontalScrollBarVisibility="Visible"
+                                Margin="10 0 0 10">
                                 <Image Source="{Binding ActiveImage}" />
                             </ScrollViewer>
-                            <Border Width="256" Height="256" BorderBrush="black" BorderThickness="3">
-                                <Canvas Width="256" Height="256" Background="lightgray"></Canvas>
-                            </Border>
-                        </StackPanel>
-                        <StackPanel>
                             <Button
                                 Name="RestoreImageButton"
                                 Command="{Binding RestoreImage}"
@@ -67,31 +69,41 @@
                                 Save image
                             </Button>
                         </StackPanel>
+                        <StackPanel>
+                            <Border
+                                BorderBrush="black"
+                                BorderThickness="3"
+                                Margin="10 0 0 10">
+                                <Canvas Width="256" Height="256" Background="lightgray" />
+                            </Border>
+                        </StackPanel>
                     </WrapPanel>
-                    
+
                 </StackPanel>
-                <StackPanel Grid.Column="2" MinWidth="200">
-                    <Label Target="FunctionaFiltersPanel">Functional filters</Label>
-                    <StackPanel 
-                        Name="FunctionaFiltersPanel"
-                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <Button Command="{Binding InvertImage}">Invert</Button>
-                        <Button Command="{Binding BrightenImage}">Brighten</Button>
-                        <Button Command="{Binding ContrastImage}">Contrast</Button>
-                        <Button Command="{Binding GammaImage}">Gamma</Button>
+                <ScrollViewer Grid.Column="2" MinWidth="200">
+                    <StackPanel>
+                        <Label Target="FunctionaFiltersPanel">Functional filters</Label>
+                        <StackPanel
+                            Name="FunctionaFiltersPanel"
+                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Button Command="{Binding InvertImage}">Invert</Button>
+                            <Button Command="{Binding BrightenImage}">Brighten</Button>
+                            <Button Command="{Binding ContrastImage}">Contrast</Button>
+                            <Button Command="{Binding GammaImage}">Gamma</Button>
+                        </StackPanel>
+                        <Label Target="ConvolutionalFiltersPanel">Convolutional filters</Label>
+                        <StackPanel
+                            Name="ConvolutionalFiltersPanel"
+                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Button Command="{Binding IdentityImage}">Identity</Button>
+                            <Button Command="{Binding BlurImage}">Blur</Button>
+                            <Button Command="{Binding EdgeDetection}">Edge Detection</Button>
+                            <Button Command="{Binding Emboss}">Emboss</Button>
+                            <Button Command="{Binding GaussianBlur}">Gaussian Blur</Button>
+                            <Button Command="{Binding SharpenImage}">Sharpen</Button>
+                        </StackPanel>
                     </StackPanel>
-                    <Label Target="ConvolutionalFiltersPanel">Convolutional filters</Label>
-                    <StackPanel 
-                        Name="ConvolutionalFiltersPanel" 
-                        IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
-                        <Button Command="{Binding IdentityImage}">Identity</Button>
-                        <Button Command="{Binding BlurImage}">Blur</Button>
-                        <Button Command="{Binding EdgeDetection}">Edge Detection</Button>
-                        <Button Command="{Binding Emboss}">Emboss</Button>
-                        <Button Command="{Binding GaussianBlur}">Gaussian Blur</Button>
-                        <Button Command="{Binding SharpenImage}">Sharpen</Button>
-                    </StackPanel>
-                </StackPanel>
+                </ScrollViewer>
             </Grid>
         </TabItem>
         <!-- <TabItem Header="About" VerticalContentAlignment="Center"> -->

@@ -4,6 +4,7 @@ namespace ComputerGraphics.Filters.Convolutional
     {
         protected override double[,] CalculateKernel()
         {
+            // Mean removal.
             kernel = new double[,]
             {
                 {-1, -1, -1,},

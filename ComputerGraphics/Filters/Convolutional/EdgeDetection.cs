@@ -4,6 +4,7 @@ namespace ComputerGraphics.Filters.Convolutional
     {
         protected override double[,] CalculateKernel()
         {
+            // Laplacian edge detection.
             kernel = new double[,] 
             {
                 { -1, -1, -1, }, 
