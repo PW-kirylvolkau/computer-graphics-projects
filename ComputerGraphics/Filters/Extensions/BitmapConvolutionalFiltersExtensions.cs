@@ -34,6 +34,7 @@ namespace ComputerGraphics.Filters.Extensions
 
             var kernel = filter.Kernel;
             var kernelSize = filter.KernelSize;
+            kernel = FactorizeKernel(kernel, kernelSize);
             var offset = (kernelSize-1) / 2;
             
             // rowIndex - row index of pixel.
@@ -114,6 +115,29 @@ namespace ComputerGraphics.Filters.Extensions
             buffer[index + 1] = (byte) green; // green channel
             buffer[index + 2] = (byte) red; // red channel
             buffer[index + 3] = 255; // alpha channel
+        }
+
+        private static double[,] FactorizeKernel(double[,] kernel, int kernelsize)
+        {
+            double sum = 0;
+            for (var i = 0; i < kernelsize; i++)
+            {
+                for (var j = 0; j < kernelsize; j++)
+                {
+                    sum += kernel[i, j];
+                }
+            }
+
+            var factorizedKernel = new double[kernelsize, kernelsize];
+            for (var i = 0; i < kernelsize; i++)
+            {
+                for (var j = 0; j < kernelsize; j++)
+                {
+                    factorizedKernel[i, j] = kernel[i, j] / sum;
+                }
+            }
+
+            return factorizedKernel;
         }
     }
 }
