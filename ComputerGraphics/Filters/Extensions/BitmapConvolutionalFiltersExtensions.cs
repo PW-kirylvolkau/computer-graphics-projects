@@ -34,7 +34,12 @@ namespace ComputerGraphics.Filters.Extensions
 
             var kernel = filter.Kernel;
             var kernelSize = filter.KernelSize;
-            kernel = FactorizeKernel(kernel, kernelSize);
+
+            if (filter.CanNormalize)
+            {
+                kernel = FactorizeKernel(kernel, kernelSize);
+            }
+           
             var offset = (kernelSize-1) / 2;
             
             // rowIndex - row index of pixel.

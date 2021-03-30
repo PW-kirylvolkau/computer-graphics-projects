@@ -2,6 +2,10 @@ namespace ComputerGraphics.Filters.Convolutional
 {
     public class EdgeDetection : ConvolutionalFilter
     {
+        public EdgeDetection()
+        {
+            CanNormalize = false;
+        }
         protected override double[,] CalculateKernel()
         {
             // Laplacian edge detection.

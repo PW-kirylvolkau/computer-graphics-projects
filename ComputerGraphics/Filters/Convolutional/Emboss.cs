@@ -2,6 +2,10 @@ namespace ComputerGraphics.Filters.Convolutional
 {
     public class Emboss : ConvolutionalFilter
     {
+        public Emboss()
+        {
+            CanNormalize = false;
+        }
         protected override double[,] CalculateKernel()
         {
             // South - east emboss.

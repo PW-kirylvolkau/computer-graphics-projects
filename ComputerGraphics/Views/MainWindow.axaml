@@ -3,10 +3,12 @@
         xmlns:vm="using:ComputerGraphics.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d"
         xmlns:md="clr-namespace:Markdown.Avalonia;assembly=Markdown.Avalonia"
         x:Class="ComputerGraphics.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
+        SystemDecorations="Full"
+        WindowState="FullScreen"
         Title="ComputerGraphics">
 
     <Window.Styles>
@@ -36,7 +38,7 @@
     </Design.DataContext>
 
     <TabControl>
-        <TabItem Header="Project One" VerticalContentAlignment="Center">
+        <TabItem Header="Project One and Two" VerticalContentAlignment="Center">
             <Grid Background="White"
                   ColumnDefinitions="2*,2*,*"
                   ShowGridLines="True"
@@ -88,7 +90,10 @@
                                     HorizontalScrollBarVisibility="Visible"
                                     Margin="10 0 0 10">
                                     <Image Source="{Binding ActiveImage}" />
-                                </ScrollViewer>
+                            </ScrollViewer>
+                            <TextBlock IsVisible="{Binding ApplyingKMeans}">
+                                Applying K Means color quantization, please wait...
+                            </TextBlock>
                             <Button
                                 Name="RestoreImageButton"
                                 Command="{Binding RestoreImage}"
@@ -124,6 +129,52 @@
                             </Button>
                         </StackPanel>
                     </WrapPanel>
+                    <StackPanel Background="yellow">
+                        <TextBlock Text="KMEANS PROJECT 2 PART" Background="red"/>
+                        <Button Command="{Binding KMeans}">Apply KMeans</Button>
+                        <Slider
+                            Value="{Binding K}" 
+                            Minimum="1" 
+                            Maximum="32" 
+                            TickFrequency="1" 
+                            TickPlacement="Outside" 
+                            IsSnapToTickEnabled="True"
+                        >
+                            <Slider.Styles>
+                                <Style Selector="Slider /template/ Thumb">
+                                    <Setter Property="ToolTip.Tip" Value="{Binding $parent[Slider].Value, Mode=OneWay, StringFormat='Value \{0:f\}'}" />
+                                    <Setter Property="ToolTip.Placement" Value="Top" />
+                                    <Setter Property="ToolTip.VerticalOffset" Value="-10" />
+                                    <Setter Property="ToolTip.HorizontalOffset" Value="-30" />
+                                </Style>
+                            </Slider.Styles>
+                        </Slider>
+                        <WrapPanel>
+                            <TextBlock>Selected K value:</TextBlock>
+                            <TextBlock Text="{Binding K}"/>
+                        </WrapPanel>
+                        <Slider
+                            Value="{Binding Iterations}" 
+                            Minimum="1" 
+                            Maximum="32" 
+                            TickFrequency="1" 
+                            TickPlacement="Outside" 
+                            IsSnapToTickEnabled="True"
+                        >
+                            <Slider.Styles>
+                                <Style Selector="Slider /template/ Thumb">
+                                    <Setter Property="ToolTip.Tip" Value="{Binding $parent[Slider].Value, Mode=OneWay, StringFormat='Value \{0:f\}'}" />
+                                    <Setter Property="ToolTip.Placement" Value="Top" />
+                                    <Setter Property="ToolTip.VerticalOffset" Value="-10" />
+                                    <Setter Property="ToolTip.HorizontalOffset" Value="-30" />
+                                </Style>
+                            </Slider.Styles>
+                        </Slider>
+                        <WrapPanel>
+                            <TextBlock>Iterations:</TextBlock>
+                            <TextBlock Text="{Binding Iterations}"/>
+                        </WrapPanel>
+                    </StackPanel>
                 </StackPanel>
                 </ScrollViewer>
                 <ScrollViewer Grid.Column="2" MinWidth="200">
@@ -148,6 +199,16 @@
                             <Button Command="{Binding GaussianBlur}">Gaussian Blur</Button>
                             <Button Command="{Binding SharpenImage}">Sharpen</Button>
                         </StackPanel>
+                        <Label Target="ProjectTwoTasksPanel">Project 2</Label>
+                        <StackPanel
+                            Name="ProjectTwoTasksPanel"
+                            Background="yellow"
+                            IsEnabled="{Binding ActiveImage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Button Command="{Binding GrayScale}">Grayscale</Button>
+                            <Button Command="{Binding DitherRandomly}">Dither randomly</Button>
+                            <TextBlock Text="LAB PART" Background="red"/>
+                            <Button Command="{Binding ApplyLabPart}">Apply lab part</Button>
+                        </StackPanel>
                         <Label Target="CustomFunctionalFiltersPanel">Custom filters</Label>
                         <StackPanel
                             Name="CustomFunctionalFiltersPanel"
@@ -156,11 +217,11 @@
                 </ScrollViewer>
             </Grid>
         </TabItem>
-        <TabItem Header="About" VerticalContentAlignment="Center">
-            <md:MarkdownScrollViewer Source="avares://ComputerGraphics/Assets/README.md">
-               
-            </md:MarkdownScrollViewer>
-        </TabItem>
+        <!-- <TabItem Header="About" VerticalContentAlignment="Center"> -->
+        <!--     <md:MarkdownScrollViewer Source="avares://ComputerGraphics/Assets/README.md"> -->
+        <!--         -->
+        <!--     </md:MarkdownScrollViewer> -->
+        <!-- </TabItem> -->
         <!-- <TabItem Header="Experiments" VerticalContentAlignment="Center"> -->
         <!--     -->
         <!-- </TabItem> -->

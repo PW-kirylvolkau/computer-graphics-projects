@@ -2,6 +2,10 @@ namespace ComputerGraphics.Filters.Convolutional
 {
     public class Identity : ConvolutionalFilter
     {
+        public Identity()
+        {
+            CanNormalize = false;
+        }
         protected override double[,] CalculateKernel()
         {
             kernel = new double[,]

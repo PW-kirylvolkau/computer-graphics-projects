@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using ComputerGraphics.Conversions;
 using ComputerGraphics.Extensions;
 using ComputerGraphics.Filters.Extensions;
 using ComputerGraphics.Filters.Convolutional;
 using ComputerGraphics.Filters.Functional;
+using ComputerGraphics.Filters.Other;
+using ComputerGraphics.Filters.Other.KMeans;
 using ComputerGraphics.Models;
 using ReactiveUI;
 using SystemBitmap = System.Drawing.Bitmap;
@@ -26,7 +29,11 @@ namespace ComputerGraphics.ViewModels
         private event FilterApplied OnFunctionalFilterApplied;
 
         private string? _path;
+        private int _k = 4;
+        private int _iterations = 5;
         private string _customFilterName = "[No name filter]";
+        private bool _isGrayScale = false;
+        private bool _applyingKMeans = false;
         private SystemBitmap? _originalImage;
         private SystemBitmap? _activeImage;
         private CustomFilter? _customFilter;
@@ -68,7 +75,66 @@ namespace ComputerGraphics.ViewModels
             set => this.RaiseAndSetIfChanged(ref _customFilterName, value);
         }
 
-        #region lab_task
+        public int K
+        {
+            get => _k; 
+            set => this.RaiseAndSetIfChanged(ref _k, value);
+        }
+
+        public int Iterations
+        {
+            get => _iterations;
+            set => this.RaiseAndSetIfChanged(ref _iterations, value);
+        }
+
+        public bool ApplyingKMeans
+        {
+            get => _applyingKMeans;
+            set => this.RaiseAndSetIfChanged(ref _applyingKMeans, value);
+        }
+
+        #region home_task project 2
+
+        public async Task GrayScale()
+        {
+            var pic = await Task.Run(() => _activeImage?.ToGrayScale());
+            _activeImage = pic;
+            _isGrayScale = true;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+
+        public async Task DitherRandomly()
+        {
+            var pic = await Task.Run(() => _activeImage?.DitherRandomly(_isGrayScale));
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+
+        public async Task KMeans()
+        {
+            _applyingKMeans = true;
+            this.RaisePropertyChanged(nameof(ApplyingKMeans));
+            var pic = await Task.Run(() => _activeImage?.ApplyKMeansQuantization(_k, _iterations));
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+            _applyingKMeans = false;
+            this.RaisePropertyChanged(nameof(ApplyingKMeans));
+        }
+        
+        #endregion
+        
+        #region lab_task project 2
+
+        public async Task ApplyLabPart()
+        {
+            var pic = await Task.Run(() => _activeImage!.ConvertToY_CbCr());
+            _activeImage = pic;
+            this.RaisePropertyChanged(nameof(ActiveImage));
+        }
+
+        #endregion
+
+        #region lab_task project 1
 
         private double _a1;
 
@@ -207,6 +273,7 @@ namespace ComputerGraphics.ViewModels
         public void RestoreImage()
         {
             _activeImage = _originalImage;
+            _isGrayScale = false;
             ResetCanvasAndActiveCustomFilter();
             this.RaisePropertyChanged(nameof(ActiveImage));
         }
@@ -335,7 +402,7 @@ namespace ComputerGraphics.ViewModels
             canvas.DrawPolyline(filter.FunctionalFilters);
         }
 
-        #endregion 
+        #endregion
         
         private Window GetMainWindow()
         {

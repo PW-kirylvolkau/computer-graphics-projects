@@ -2,6 +2,10 @@ namespace ComputerGraphics.Filters.Convolutional
 {
     public class Sharpen : ConvolutionalFilter
     {
+        public Sharpen()
+        {
+            CanNormalize = false;
+        }
         protected override double[,] CalculateKernel()
         {
             // Mean removal.
